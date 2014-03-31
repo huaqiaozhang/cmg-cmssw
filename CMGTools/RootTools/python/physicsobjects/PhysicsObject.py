@@ -28,29 +28,9 @@ class PhysicsObject(Particle):
         p4 = self.physObj.p4()
         p4 *= scale 
         self.physObj.setP4( p4 )  
-##         p4 = self.physObj.polarP4()
-##         sp4 = PtEtaPhiE4DLV(
-##             p4.Pt()*scale,
-##             p4.Eta(),
-##             p4.Phi(),
-##             p4.E()
-##             )
-##         sp4.SetE( sp4.E()*scale )
-##         ptepmsp4 = PtEtaPhiM4DLV(
-##             sp4.Pt(),
-##             sp4.Eta(),
-##             sp4.Phi(),
-##             sp4.M()
-##             )
-##         self.physObj.setP4( p4.__class__(
-##             sp4.Pt(),
-##             sp4.Eta(),
-##             sp4.Phi(),
-##             sp4.M()
-##             ) )
-        
         
     def __getattr__(self,name):
-        '''all accessors  from cmg::DiTau are transferred to this class.'''
+        '''all attributes from self.physObj are transferred to this class.
+        '''
         return getattr(self.physObj, name)
 
