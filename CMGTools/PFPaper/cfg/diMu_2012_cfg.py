@@ -79,6 +79,11 @@ jetAna = cfg.Analyzer(
     relaxJetId = True, 
     )
 
+pfAna = cfg.Analyzer(
+    'PFAnalyzer',
+    src_pfcands = 'particleFlow'
+    )
+
 ## vbfAna = cfg.Analyzer(
 ##     'VBFSimpleAnalyzer',
 ##     Mjj = 500,
@@ -135,9 +140,8 @@ sequence = cfg.Sequence( [
     vertexAna,
     pileUpAna,
     ZMuMuAna,
-    # ZMuMuRochCor, 
     jetAna,
-    # vbfAna,
+    pfAna,
     treeProducer
    ] )
 

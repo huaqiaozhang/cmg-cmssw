@@ -17,7 +17,8 @@ eventSelector = cfg.Analyzer(
 
 pfAna = cfg.Analyzer(
     'PFAnalyzer',
-    src_pfCandidates = 'particleFlow'
+    src_pfCandidates = 'particleFlow',
+    src_ecalClusters = 'particleFlowClusterECAL'
     )
 
 
