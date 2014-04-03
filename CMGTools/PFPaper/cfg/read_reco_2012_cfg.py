@@ -18,7 +18,8 @@ eventSelector = cfg.Analyzer(
 pfAna = cfg.Analyzer(
     'PFAnalyzer',
     src_pfCandidates = 'particleFlow',
-    src_ecalClusters = 'particleFlowClusterECAL'
+    src_ecalClusters = 'particleFlowClusterECAL',
+    src_blocks = 'particleFlowBlock'
     )
 
 
@@ -39,6 +40,12 @@ QCD = cfg.Component(
       '/RelValQCD_FlatPt_15_3000/CMSSW_5_3_12_patch2-START53_LV2-v1/GEN-SIM-RECO',
       'CMS', '.*root')
     )
+
+# for faster testing, use a local file: 
+localFile = 'RECO.root'
+if os.path.isfile(localFile):
+    QCD.files = [localFile]
+    
 
 ###############################################################################
 

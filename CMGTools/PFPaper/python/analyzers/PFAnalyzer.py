@@ -4,9 +4,13 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.GenericObject import GenericObject
 from CMGTools.RootTools.physicsobjects.PhysicsObject import PhysicsObject
+from CMGTools.PFPaper.analyzers.PFBlock import PFBlock
+
+
 
 class PFCandidate(PhysicsObject):
     pass
+
 
 class PFCluster(GenericObject):
     def __str__(self):
@@ -49,6 +53,10 @@ class PFAnalyzer( Analyzer ):
             self.cfg_ana.src_ecalClusters,
             'std::vector<reco::PFCluster>'
             )
+        self.handles['blocks'] =  AutoHandle(
+            self.cfg_ana.src_blocks,
+            'std::vector<reco::PFBlock>'
+            )
 
     def beginLoop(self):
         super(PFAnalyzer,self).beginLoop()        
@@ -63,9 +71,12 @@ class PFAnalyzer( Analyzer ):
         all_clusters = map( PFCluster,
                         self.handles['ecalClusters'].product() ) 
         sorted_clusters = sort_deposits( all_clusters )
-
-        event.EBClusters = sorted_clusters[-1]
+        # in sorted_clusters, the key is the layer id, c.f. PFLayer
+        event.EBClusters = sorted_clusters[-1] 
         event.ECClusters = sorted_clusters[-2]
+
+        event.blocks = map( PFBlock,
+                            self.handles['blocks'].product())
         
         return True
 
