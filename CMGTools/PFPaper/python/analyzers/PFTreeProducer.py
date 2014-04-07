@@ -42,13 +42,14 @@ class PFTreeProducer( TreeAnalyzerNumpy ):
         fill( tr, 'run', event.run) 
         fill( tr, 'lumi',event.lumi)
         fill( tr, 'evt', event.eventId)
-       
-        fillParticle(tr, 'diL', event.diLepton)
-        fill(tr, 'diL_mass', event.diLepton.mass())
+
+        if hasattr(event, 'diLepton'):
+            fillParticle(tr, 'diL', event.diLepton)
+            fill(tr, 'diL_mass', event.diLepton.mass())
 ##         fillParticle(tr, 'diLRaw', event.diLeptonRaw)
 ##         fill(tr, 'diLRaw_mass', event.diLeptonRaw.mass())
-        fillLepton(tr, 'leg1', event.diLepton.leg1())
-        fillLepton(tr, 'leg2', event.diLepton.leg2())
+            fillLepton(tr, 'leg1', event.diLepton.leg1())
+            fillLepton(tr, 'leg2', event.diLepton.leg2())
 ##         fillLepton(tr, 'leg1Raw', event.diLeptonRaw.leg1())
 ##         fillLepton(tr, 'leg2Raw', event.diLeptonRaw.leg2())
 

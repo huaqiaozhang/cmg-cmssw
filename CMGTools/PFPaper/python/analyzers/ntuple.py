@@ -211,7 +211,9 @@ def bookJet( tree, pName ):
     var(tree, '{pName}_h0Frac'.format(pName=pName))
     var(tree, '{pName}_hhfFrac'.format(pName=pName))
     var(tree, '{pName}_ehfFrac'.format(pName=pName))
+    var(tree, '{pName}_rawFactor'.format(pName=pName))    
     bookParticle(tree, '{pName}_leg'.format(pName=pName))
+    bookParticle(tree, '{pName}_genJet'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
@@ -227,8 +229,12 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_h0Frac'.format(pName=pName), jet.component(5).fraction() )
     fill(tree, '{pName}_hhfFrac'.format(pName=pName), jet.component(6).fraction() )
     fill(tree, '{pName}_ehfFrac'.format(pName=pName), jet.component(7).fraction() )
+    fill(tree, '{pName}_rawFactor'.format(pName=pName), jet.rawFactor() )
     if hasattr(jet, 'leg') and jet.leg:
         fillParticle(tree, '{pName}_leg'.format(pName=pName), jet.leg )
+    if hasattr(jet, 'genJet') and jet.genJet:
+        fillParticle(tree, '{pName}_genJet'.format(pName=pName), jet.genJet )
+        
     
 # vbf
 

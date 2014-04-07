@@ -79,11 +79,6 @@ jetAna = cfg.Analyzer(
     relaxJetId = True, 
     )
 
-pfAna = cfg.Analyzer(
-    'PFAnalyzer',
-    src_pfcands = 'particleFlow'
-    )
-
 ## vbfAna = cfg.Analyzer(
 ##     'VBFSimpleAnalyzer',
 ##     Mjj = 500,
@@ -102,7 +97,10 @@ treeProducer = cfg.Analyzer(
 from CMGTools.ZJetsTutorial.samples.run2012.ewk import DYJets
 from CMGTools.RootTools.utils.getFiles import getFiles
 
-DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0', 'cmgtools', '.*root')
+DYJets.files = getFiles(
+    # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0',
+    '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0',
+    'cmgtools', '.*root')
 
 ###############################################################################
 
@@ -139,9 +137,8 @@ sequence = cfg.Sequence( [
     # triggerAna,
     vertexAna,
     pileUpAna,
-    ZMuMuAna,
+#     ZMuMuAna,
     jetAna,
-    pfAna,
     treeProducer
    ] )
 
@@ -152,9 +149,10 @@ if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = DYJets
-    comp.files = comp.files[:10]
+    nfiles = 12
+    comp.files = comp.files[:nfiles]
     selectedComponents = [comp]
-    comp.splitFactor = 10
+    comp.splitFactor = nfiles
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component
