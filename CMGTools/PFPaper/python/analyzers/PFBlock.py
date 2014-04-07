@@ -30,9 +30,9 @@ def sort_elements(self):
     return self.selems
 
 
-def block_analysis(self, sorted_elements): 
-    itracks = sorted_elements.get(1)
-    if itracks is None:
-        return False
-    iassoc = 
-    return True
+## def block_analysis(self, sorted_elements): 
+##     itracks = sorted_elements.get(1)
+##     if itracks is None:
+##         return False
+##     iassoc = 
+##     return True
