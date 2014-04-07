@@ -94,10 +94,10 @@ treeProducer = cfg.Analyzer(
 ###############################################################################
 
 
-from CMGTools.ZJetsTutorial.samples.run2012.ewk import DYJets
+from CMGTools.ZJetsTutorial.samples.run2012.ewk import TTJets as component  
 from CMGTools.RootTools.utils.getFiles import getFiles
 
-DYJets.files = getFiles(
+component.files = getFiles(
     # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0',
     '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0',
     'cmgtools', '.*root')
@@ -105,7 +105,7 @@ DYJets.files = getFiles(
 ###############################################################################
 
 
-MC_list = [DYJets]
+MC_list = [component]
 
 allsamples = MC_list
 
@@ -148,7 +148,7 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
-    comp = DYJets
+    comp = component
     nfiles = 12
     comp.files = comp.files[:nfiles]
     selectedComponents = [comp]
