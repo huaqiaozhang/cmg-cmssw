@@ -20,8 +20,6 @@ def loadLibs():
 
 loadLibs()
 
-
-
 from CMGTools.RootTools.Chain import Chain
 # from ROOT import Chain as CChain
 # Chain = CChain

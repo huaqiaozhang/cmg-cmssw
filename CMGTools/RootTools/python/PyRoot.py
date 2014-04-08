@@ -5,7 +5,9 @@ import ROOT
 
 import CMGTools.RootTools.StartUp 
 
-from CMGTools.RootTools.RootTools import *
+from ROOT import gROOT, TFile, TCanvas, TPad, gPad, TBrowser, TH2F, TH1F, TH1D , TProfile, TLegend, gDirectory
+from CMGTools.RootTools.Chain import Chain
+from CMGTools.RootTools.Style import *
 
 gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 

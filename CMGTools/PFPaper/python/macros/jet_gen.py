@@ -1,24 +1,55 @@
 from ROOT import TProfile, TH2F, TH1F
 from CMGTools.RootTools.PyRoot import * 
+from CMGTools.RootTools.Style import *
 
 
-
-class JetGenPlotter( object ):
+class Residual(object):
     
-    def __init__(self, name, file_pattern):
+    def __init__(self, name, nx, xmin, xmax, ny, ymin, ymax ):
         self.name = name
-        self.chain = Chain(None, file_pattern)
         
-        self.res_eta = TH2F( self.hname('res_eta'), self.hname('res_eta'),
-                                 20, -5, 5, 50, 0, 2)
+        self.h2d = TH2F( self.name, self.name,
+                         nx, xmin, xmax,
+                         ny, ymin, ymax)
+
+        self.canvas = None
+                         
+    def fill(self, tree, var, cut):
+        tree.Draw('{var}>>+{hname}'.format(var=var, hname=self.name),
+                  cut, 'goff')
         
-        self.chain.Project( self.res_eta.GetName(),
-                            '(jet1_pt*jet1_rawFactor/jet1_genJet_pt):jet1_genJet_eta')
-        
-        
-    def hname(self, hname):
-        return '_'.join( [self.name, hname] )
-    
+    def fit(self):
+        self.h2d.FitSlicesY()
+        self.mean = gDirectory.Get(self.name + '_1')
+        self.sigma = gDirectory.Get(self.name + '_2')
+
+    def draw(self):
+        self.canvas = TCanvas(self.name, self.name, 800, 800)
+        self.canvas.Divide(2,2)
+        self.canvas.cd(1)
+        self.h2d.Draw('col')
+        self.canvas.cd(2)
+        draw(self.mean, ';p_{T} (GeV);response', 0.5, 1.5, 40, 100, sRed, gPad) 
+        self.canvas.cd(3)
+        draw(self.sigma, ';p_{T} (GeV);#sigma', 0, 0.8, 40, 100, sRed, gPad) 
+
+
+def draw(hist, title, ymin, ymax, xmin, xmax, style, pad=None):
+    if pad is None:
+        pad = TCanvas(hist.GetName(), hist.GetName(),
+                      600, 600)
+    hist.SetStats(0)
+    hist.SetTitle(title)
+    sRed.formatHisto(hist) 
+    hist.Draw()
+    hist.GetYaxis().SetRangeUser(ymin, ymax)
+    hist.GetXaxis().SetRangeUser(xmin, xmax)
+    formatPad(pad)
+    pad.Update()
+    return pad
+
+
+
 
 if __name__ == '__main__':
 
@@ -27,5 +58,32 @@ if __name__ == '__main__':
     args = sys.argv[1:]
 
     file_pattern = args[0]
-    plot = JetGenPlotter( 'plot', file_pattern )
+    chain = Chain(None, file_pattern)
+
+    pt1 =  Residual('pt1', 100, 0, 200, 100, 0, 3)
+    pt1.fill( chain,
+              'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
+              'jet1_genJet_pt>0')
+    pt1.fit()
+    pt1.draw()
+
+    pt2 =  Residual('pt2', 100, 0, 200, 100, 0, 3)
+    pt2.fill( chain,
+              'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
+              'jet2_genJet_pt>0')
+    pt2.fit()
+    pt2.draw()
+
+
+    ptboth =  Residual('ptboth', 100, 0, 200, 100, 0, 3)
+    ptboth.fill( chain,
+                 'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
+                 'jet1_genJet_pt>0')
+    ptboth.fill( chain,
+                 'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
+                 'jet2_genJet_pt>0')
+    ptboth.fit()
+    ptboth.draw()
+
+
     
