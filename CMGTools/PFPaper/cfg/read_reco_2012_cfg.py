@@ -39,15 +39,11 @@ pfAna = cfg.Analyzer(
 
 jetAna = cfg.Analyzer(
     'PFPaperJetAnalyzer',
-    # jetCol = 'ak5PFJets',
-    # genJetCol = 'ak5GenJets',
     jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
     genJetHandle = ('ak5GenJets', 'std::vector< reco::GenJet >'),
     genParticleHandle = ('genParticles', 'std::vector< reco::GenParticle >'),
-    jetPt = 20.,
+    jetPt = 10.,
     jetEta = 4.7,
-    btagSFseed = 123456,
-    relaxJetId = True, 
     )
 
 
@@ -66,7 +62,8 @@ QCD = cfg.Component(
     'QCD',
     files = getFiles(
       '/QCDFlatPt/5_3_14_automc_noPU/AODSIM_RECOSIM_DISPLAY',
-      'cmgtools', 'aod.*root', useCache=False)
+      'cmgtools', 'aod.*root', useCache=False),
+    splitFactor = 12
     )
 QCD.isMC = True
 
@@ -88,12 +85,12 @@ sequence = cfg.Sequence( [
     jsonAna,
     vertexAna,
     jetAna,
-#    treeProducer,
+    treeProducer,
    ] )
 
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 1
+test = 0
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore

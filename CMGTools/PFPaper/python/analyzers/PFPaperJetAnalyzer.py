@@ -44,19 +44,16 @@ class PFPaperJetAnalyzer( Analyzer ):
 
     Example configuration:
 
+
     jetAna = cfg.Analyzer(
-      'PFPaperJetAnalyzer',
-      # cmg jet input collection
-      jetCol = 'cmgPFJetSel',
-      # pt threshold
-      jetPt = 30,
-      # eta range definition
-      jetEta = 5.0,
-      # seed for the btag scale factor
-      btagSFseed = 123456,
-      # if True, the PF and PU jet ID are not applied, and the jets get flagged
-      relaxJetId = False,
+        'PFPaperJetAnalyzer',
+        jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
+        genJetHandle = ('ak5GenJets', 'std::vector< reco::GenJet >'),
+        genParticleHandle = ('genParticles', 'std::vector< reco::GenParticle >'),
+        jetPt = 10.,
+        jetEta = 4.7,
     )
+
     """
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
@@ -166,76 +163,10 @@ class PFPaperJetAnalyzer( Analyzer ):
 
         return True
 
-    def jerCorrection(self, jet):
-        ''' Adds JER correction according to first method at
-        https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
 
-        Requires some attention when genJet matching fails.
-        '''
-        if not hasattr(jet, 'genJet'):
-            return
-
-        #import pdb; pdb.set_trace()
-        corrections = [0.052, 0.057, 0.096, 0.134, 0.288]
-        maxEtas = [0.5, 1.1, 1.7, 2.3, 5.0]
-        eta = abs(jet.eta())
-
-        for i, maxEta in enumerate(maxEtas):
-            if eta < maxEta:
-                pt = jet.pt()
-                deltaPt = (pt - jet.genJet.pt()) * corrections[i]
-                totalScale = (pt + deltaPt) / pt
-
-                if totalScale < 0.:
-                    totalScale = 0.
-                jet.scaleEnergy(totalScale)
-                break        
-
-    def jesCorrection(self, jet, scale=0.):
-        ''' Adds JES correction in number of sigmas (scale)
-        '''
-        # Do nothing if nothing to change
-        if scale == 0.:
-            return
-
-        unc = jet.uncOnFourVectorScale()
-
-        totalScale = 1. + scale * unc
-
-        if totalScale < 0.:
-            totalScale = 0.
-        jet.scaleEnergy(totalScale)
-
-    def testJetID(self, jet):
-        jet.puJetIdPassed = jet.puJetId(wp53x=True)
-        jet.pfJetIdPassed = jet.jetID("POG_PFID_Loose")
-
-        if self.cfg_ana.relaxJetId:
-            return True
-        else:
-            return jet.puJetIdPassed and jet.pfJetIdPassed
-        
         
     def testJet( self, jet ):
-        # 2 is loose pile-up jet id
         return jet.pt() > self.cfg_ana.jetPt and \
                abs( jet.eta() ) < self.cfg_ana.jetEta 
-               # self.testJetID(jet)
-               # jet.passPuJetId('full', 2)
 
 
-    def testBJet(self, jet):
-        # medium csv working point
-        # https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP#B_tagging_Operating_Points_for_3
-        jet.btagMVA = jet.btag("combinedSecondaryVertexBJetTags")
-        jet.btagFlag = self.btagSF.BTagSFcalc.isbtagged(jet.pt(), 
-                          jet.eta(),
-                          jet.btag("combinedSecondaryVertexBJetTags"),
-                          abs(jet.partonFlavour()),
-                          not self.cfg_comp.isMC,
-                          0,0,
-                          self.is2012 )
-        return jet.pt()>20 and \
-               abs( jet.eta() ) < 2.4 and \
-               jet.btagFlag and \
-               self.testJetID(jet)

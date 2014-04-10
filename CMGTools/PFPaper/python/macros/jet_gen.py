@@ -29,9 +29,9 @@ class Residual(object):
         self.canvas.cd(1)
         self.h2d.Draw('col')
         self.canvas.cd(2)
-        draw(self.mean, ';p_{T} (GeV);response', 0.5, 1.5, 40, 100, sRed, gPad) 
+        draw(self.mean, ';p_{T} (GeV);response', 0.5, 1.5, 20, 100, sRed, gPad) 
         self.canvas.cd(3)
-        draw(self.sigma, ';p_{T} (GeV);#sigma', 0, 0.8, 40, 100, sRed, gPad) 
+        draw(self.sigma, ';p_{T} (GeV);#sigma', 0, 0.8, 20, 100, sRed, gPad) 
 
 
 def draw(hist, title, ymin, ymax, xmin, xmax, style, pad=None):
@@ -60,19 +60,19 @@ if __name__ == '__main__':
     file_pattern = args[0]
     chain = Chain(None, file_pattern)
 
-    pt1 =  Residual('pt1', 100, 0, 200, 100, 0, 3)
-    pt1.fill( chain,
-              'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
-              'jet1_genJet_pt>0')
-    pt1.fit()
-    pt1.draw()
+##     pt1 =  Residual('pt1', 100, 0, 200, 100, 0, 3)
+##     pt1.fill( chain,
+##               'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
+##               'jet1_genJet_pt>0')
+##     pt1.fit()
+##     pt1.draw()
 
-    pt2 =  Residual('pt2', 100, 0, 200, 100, 0, 3)
-    pt2.fill( chain,
-              'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
-              'jet2_genJet_pt>0')
-    pt2.fit()
-    pt2.draw()
+##     pt2 =  Residual('pt2', 100, 0, 200, 100, 0, 3)
+##     pt2.fill( chain,
+##               'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
+##               'jet2_genJet_pt>0')
+##     pt2.fit()
+##     pt2.draw()
 
 
     ptboth =  Residual('ptboth', 100, 0, 200, 100, 0, 3)
