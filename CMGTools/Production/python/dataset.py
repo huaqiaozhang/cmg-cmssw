@@ -271,12 +271,15 @@ class Dataset( BaseDataset ):
 
         When the integrity check file is not available,
         files are considered as good.'''
-        mask = "IntegrityCheck"
            
         self.bad_files = {}
         self.good_files = []
 
-        file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
+        file_mask = castortools.matchingFiles(self.castorDir,
+                                              '^IntegrityCheck.*\.txt$')
+        if len(file_mask)==0:
+            raise IntegrityCheckError( "ERROR: IntegrityCheck log file " 
+                                       "IntegrityCheck_XXXXXXXXXX.txt not found" )
         if file_mask:
             from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
             p = PublishToFileSystem(mask)
@@ -293,8 +296,7 @@ class Dataset( BaseDataset ):
                         self.bad_files[name] = 'ValidDup'
                     else:
                         self.good_files.append( name )
-        else:
-            raise IntegrityCheckError( "ERROR: IntegrityCheck log file IntegrityCheck_XXXXXXXXXX.txt not found" )
+            
 
     def extractFileSizes(self):
         '''Get the file size for each file, from the eos ls -l command.'''
