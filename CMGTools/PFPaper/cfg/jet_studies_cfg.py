@@ -149,7 +149,7 @@ if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = component
-    nfiles = 12
+    nfiles = 1
     comp.files = comp.files[:nfiles]
     selectedComponents = [comp]
     comp.splitFactor = nfiles

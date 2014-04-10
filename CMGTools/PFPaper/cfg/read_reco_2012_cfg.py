@@ -5,6 +5,7 @@ from CMGTools.RootTools.fwlite.Config import printComps
 
 # from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 from CMGTools.RootTools.RootTools import * 
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 
 pathsAndFilters = []
 
@@ -15,6 +16,19 @@ eventSelector = cfg.Analyzer(
     ]
     )
 
+
+jsonAna = cfg.Analyzer(
+    'JSONAnalyzer',
+    )
+
+vertexAna = cfg.Analyzer(
+    'VertexAnalyzer',
+    goodVertices = 'offlinePrimaryVertices',
+    vertexWeight = None,
+    fixedWeight = 1,
+    verbose = False
+    )
+
 pfAna = cfg.Analyzer(
     'PFAnalyzer',
     src_pfCandidates = 'particleFlow',
@@ -22,6 +36,19 @@ pfAna = cfg.Analyzer(
     src_blocks = 'particleFlowBlock'
     )
 
+
+jetAna = cfg.Analyzer(
+    'PFPaperJetAnalyzer',
+    # jetCol = 'ak5PFJets',
+    # genJetCol = 'ak5GenJets',
+    jetHandle = AutoHandle('ak5PFJets', 'std::vector< reco::PFJet >'),
+    genJetHandle = AutoHandle('ak5GenJets', 'std::vector< reco::GenJet >'),
+    genParticleHandle = AutoHandle('genParticles', 'std::vector< reco::GenParticle >'),
+    jetPt = 20.,
+    jetEta = 4.7,
+    btagSFseed = 123456,
+    relaxJetId = True, 
+    )
 
 
 treeProducer = cfg.Analyzer(
@@ -40,6 +67,7 @@ QCD = cfg.Component(
       '/RelValQCD_FlatPt_15_3000/CMSSW_5_3_12_patch2-START53_LV2-v1/GEN-SIM-RECO',
       'CMS', '.*root')
     )
+QCD.isMC = True
 
 # for faster testing, use a local file: 
 localFile = 'RECO.root'
@@ -54,7 +82,11 @@ if os.path.isfile(localFile):
 selectedComponents = [QCD]
 
 sequence = cfg.Sequence( [
-    pfAna,
+    # pfAna,
+    jsonAna,
+    vertexAna,
+    jetAna,
+    treeProducer,
    ] )
 
 

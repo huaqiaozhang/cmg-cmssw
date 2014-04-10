@@ -199,11 +199,11 @@ def fillTau( tree, pName, tau ):
 
 def bookJet( tree, pName ):
     bookParticle(tree, pName )
-    var(tree, '{pName}_puMvaFull'.format(pName=pName))
-    var(tree, '{pName}_puMvaSimple'.format(pName=pName))
-    var(tree, '{pName}_puMvaCutBased'.format(pName=pName))
-    var(tree, '{pName}_puJetId'.format(pName=pName))
-    var(tree, '{pName}_looseJetId'.format(pName=pName))
+##     var(tree, '{pName}_puMvaFull'.format(pName=pName))
+##     var(tree, '{pName}_puMvaSimple'.format(pName=pName))
+##     var(tree, '{pName}_puMvaCutBased'.format(pName=pName))
+##     var(tree, '{pName}_puJetId'.format(pName=pName))
+##     var(tree, '{pName}_looseJetId'.format(pName=pName))
     var(tree, '{pName}_chFrac'.format(pName=pName))
     var(tree, '{pName}_eFrac'.format(pName=pName))
     var(tree, '{pName}_muFrac'.format(pName=pName))
@@ -217,11 +217,11 @@ def bookJet( tree, pName ):
 
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
-    fill(tree, '{pName}_puMvaFull'.format(pName=pName), jet.puMva('full') )
-    fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
-    fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
-    fill(tree, '{pName}_puJetId'.format(pName=pName), jet.puJetIdPassed)
-    fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.pfJetIdPassed)
+##     fill(tree, '{pName}_puMvaFull'.format(pName=pName), jet.puMva('full') )
+##     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
+##     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
+##     fill(tree, '{pName}_puJetId'.format(pName=pName), jet.puJetIdPassed)
+##     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.pfJetIdPassed)
     fill(tree, '{pName}_chFrac'.format(pName=pName), jet.component(1).fraction() )
     fill(tree, '{pName}_eFrac'.format(pName=pName), jet.component(2).fraction() )
     fill(tree, '{pName}_muFrac'.format(pName=pName), jet.component(3).fraction() )
