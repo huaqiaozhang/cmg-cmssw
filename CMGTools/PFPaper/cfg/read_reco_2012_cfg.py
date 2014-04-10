@@ -64,8 +64,8 @@ from CMGTools.RootTools.utils.getFiles import getFiles
 QCD = cfg.Component(
     'QCD',
     files = getFiles(
-      '/RelValQCD_FlatPt_15_3000/CMSSW_5_3_12_patch2-START53_LV2-v1/GEN-SIM-RECO',
-      'CMS', '.*root')
+      '/store/cmst3/user/cmgtools/CMG/QCDFlatPt/5_3_14_automc_noPU/AODSIM_RECOSIM_DISPLAY',
+      'cmgtools', 'aod.*root')
     )
 QCD.isMC = True
 

@@ -134,10 +134,8 @@ for mc in MC_list:
 sequence = cfg.Sequence( [
     #     eventSelector,
     jsonAna,
-    # triggerAna,
     vertexAna,
     pileUpAna,
-#     ZMuMuAna,
     jetAna,
     treeProducer
    ] )

@@ -199,11 +199,6 @@ def fillTau( tree, pName, tau ):
 
 def bookJet( tree, pName ):
     bookParticle(tree, pName )
-##     var(tree, '{pName}_puMvaFull'.format(pName=pName))
-##     var(tree, '{pName}_puMvaSimple'.format(pName=pName))
-##     var(tree, '{pName}_puMvaCutBased'.format(pName=pName))
-##     var(tree, '{pName}_puJetId'.format(pName=pName))
-##     var(tree, '{pName}_looseJetId'.format(pName=pName))
     var(tree, '{pName}_chFrac'.format(pName=pName))
     var(tree, '{pName}_eFrac'.format(pName=pName))
     var(tree, '{pName}_muFrac'.format(pName=pName))
@@ -217,11 +212,6 @@ def bookJet( tree, pName ):
 
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
-##     fill(tree, '{pName}_puMvaFull'.format(pName=pName), jet.puMva('full') )
-##     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
-##     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
-##     fill(tree, '{pName}_puJetId'.format(pName=pName), jet.puJetIdPassed)
-##     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.pfJetIdPassed)
     fill(tree, '{pName}_chFrac'.format(pName=pName), jet.component(1).fraction() )
     fill(tree, '{pName}_eFrac'.format(pName=pName), jet.component(2).fraction() )
     fill(tree, '{pName}_muFrac'.format(pName=pName), jet.component(3).fraction() )
@@ -235,30 +225,4 @@ def fillJet( tree, pName, jet ):
     if hasattr(jet, 'genJet') and jet.genJet:
         fillParticle(tree, '{pName}_genJet'.format(pName=pName), jet.genJet )
         
-    
-# vbf
-
-def bookVBF( tree, pName ):
-    var(tree, '{pName}_mjj'.format(pName=pName))
-    var(tree, '{pName}_deta'.format(pName=pName))
-    var(tree, '{pName}_nCentral'.format(pName=pName))
-    var(tree, '{pName}_mva'.format(pName=pName))
-    var(tree, '{pName}_jdphi'.format(pName=pName))
-    var(tree, '{pName}_dijetpt'.format(pName=pName))
-    var(tree, '{pName}_dijetphi'.format(pName=pName))
-    var(tree, '{pName}_hdijetphi'.format(pName=pName))
-    var(tree, '{pName}_visjeteta'.format(pName=pName))
-    var(tree, '{pName}_ptvis'.format(pName=pName))
-    
-def fillVBF( tree, pName, vbf ):
-    fill(tree, '{pName}_mjj'.format(pName=pName), vbf.mjj )
-    fill(tree, '{pName}_deta'.format(pName=pName), vbf.deta )
-    fill(tree, '{pName}_nCentral'.format(pName=pName), len(vbf.centralJets) )
-    fill(tree, '{pName}_mva'.format(pName=pName), vbf.mva )
-    fill(tree, '{pName}_jdphi'.format(pName=pName), vbf.dphi )
-    fill(tree, '{pName}_dijetpt'.format(pName=pName), vbf.dijetpt )
-    fill(tree, '{pName}_dijetphi'.format(pName=pName), vbf.dijetphi )
-    fill(tree, '{pName}_hdijetphi'.format(pName=pName), vbf.dphidijethiggs )
-    fill(tree, '{pName}_visjeteta'.format(pName=pName), vbf.visjeteta )
-    fill(tree, '{pName}_ptvis'.format(pName=pName), vbf.ptvis )
-    
+   
