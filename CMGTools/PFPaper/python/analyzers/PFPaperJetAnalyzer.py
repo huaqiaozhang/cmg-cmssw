@@ -65,10 +65,10 @@ class PFPaperJetAnalyzer( Analyzer ):
     def declareHandles(self):
         super(PFPaperJetAnalyzer, self).declareHandles()
 
-        self.handles['jets'] = self.cfg_ana.jetHandle
+        self.handles['jets'] = AutoHandle( * self.cfg_ana.jetHandle )
         if self.cfg_comp.isMC:
-            self.mchandles['genParticles'] = self.cfg_ana.genParticleHandle
-            self.mchandles['genJets'] = self.cfg_ana.genJetHandle
+            self.mchandles['genParticles'] = AutoHandle( * self.cfg_ana.genParticleHandle ) 
+            self.mchandles['genJets'] = AutoHandle( * self.cfg_ana.genJetHandle ) 
 
     def beginLoop(self):
         super(PFPaperJetAnalyzer,self).beginLoop()

@@ -28,7 +28,7 @@ class PFTreeProducer( TreeAnalyzerNumpy ):
         bookJet(tr, 'jet1')
         bookJet(tr, 'jet2')
 
-        bookVBF( tr, 'VBF' )
+        # bookVBF( tr, 'VBF' )
 
         var( tr, 'nVert')
         var( tr, 'weight')
