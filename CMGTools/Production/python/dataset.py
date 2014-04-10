@@ -282,7 +282,7 @@ class Dataset( BaseDataset ):
                                        "IntegrityCheck_XXXXXXXXXX.txt not found" )
         if file_mask:
             from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
-            p = PublishToFileSystem(mask)
+            p = PublishToFileSystem('IntegrityCheck')
             report = p.get(self.castorDir)
             if report is not None and report:
                 self.maskExists = True
