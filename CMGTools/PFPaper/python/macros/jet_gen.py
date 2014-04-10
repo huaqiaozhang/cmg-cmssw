@@ -75,15 +75,26 @@ if __name__ == '__main__':
 ##     pt2.draw()
 
 
-    ptboth =  Residual('ptboth', 100, 0, 200, 100, 0, 3)
-    ptboth.fill( chain,
+    plot_vs_pt =  Residual('plot_pt', 100, 0, 200, 100, 0, 3)
+    plot_vs_pt.fill( chain,
                  'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
                  'jet1_genJet_pt>0')
-    ptboth.fill( chain,
+    plot_vs_pt.fill( chain,
                  'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
                  'jet2_genJet_pt>0')
-    ptboth.fit()
-    ptboth.draw()
+    plot_vs_pt.fit()
+    plot_vs_pt.draw()
+
+
+    plot_vs_eta =  Residual('plot_eta', 100, -5, 5, 100, 0, 3)
+    plot_vs_eta.fill( chain,
+                      'jet1_pt / jet1_genJet_eta : jet1_genJet_eta',
+                      'jet1_genJet_pt>0')
+    plot_vs_eta.fill( chain,
+                      'jet2_pt / jet2_genJet_pt : jet2_genJet_eta',
+                      'jet2_genJet_pt>0')
+    plot_vs_eta.fit()
+    plot_vs_eta.draw()
 
 
     
