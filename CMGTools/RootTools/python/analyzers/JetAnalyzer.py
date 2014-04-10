@@ -48,10 +48,16 @@ class JetAnalyzer( Analyzer ):
                                            'std::vector<cmg::PFJet>' )
         if self.cfg_comp.isMC:
             # and ("BB" in self.cfg_comp.name):
-            self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-                                                         'std::vector<reco::GenParticle>' )
-            self.mchandles['genJets'] = AutoHandle('genJetSel',
-                                                   'std::vector<cmg::PhysicsObjectWithPtr< edm::Ptr<reco::GenJet> > >')
+            self.mchandles['genParticles'] = AutoHandle(
+                'genParticlesPruned',
+                'std::vector<reco::GenParticle>'
+                )
+            genJetCol = 'genJetSel'
+            if hasattr(self.cfg_ana, 'genJetCol'):
+                genJetCol = self.cfg_ana.genJetCol
+            self.mchandles['genJets'] = AutoHandle(
+                genJetCol,
+                'std::vector<cmg::PhysicsObjectWithPtr< edm::Ptr<reco::GenJet> > >')
 ##             self.mchandles['genJetsP'] = AutoHandle('ak5GenJetsNoNu',
 ##                                                     'std::vector< reco::GenJet >')
 
