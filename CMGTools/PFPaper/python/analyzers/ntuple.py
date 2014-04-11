@@ -13,12 +13,14 @@ def bookParticle( tree, pName ):
     var(tree, '{pName}_eta'.format(pName=pName))
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_charge'.format(pName=pName))
+    var(tree, '{pName}_energy'.format(pName=pName))
 
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
     fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
+    fill(tree, '{pName}_energy'.format(pName=pName), particle.energy() )
 
 def bookGenParticle(tree, pName):
     bookParticle(tree, pName)

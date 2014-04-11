@@ -94,9 +94,9 @@ test = 0
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
-    comp.files = comp.files[:100]
+    comp.files = comp.files[:1]
     selectedComponents = [comp]
-    comp.splitFactor = 10
+    comp.splitFactor = 1
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component
