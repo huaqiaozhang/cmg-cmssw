@@ -7,8 +7,11 @@ import numpy as np
 
 from time import sleep
 
-sRed.markerSize = 0.8
-sRed.markerStyle = 4
+styles = [sBlue, sRed]
+for style in styles:
+    style.markerSize = 0.8
+    style.markerStyle = 4
+
 
 class Profile( object ):
     def __init__(self, h2d):
@@ -25,19 +28,18 @@ fun_respt = TF1('fun_respt',
 
 class Residual(object):
     
-    def __init__(self, name, xtitle, nx, xmin, xmax, ny, ymin, ymax, logx=False):
+    def __init__(self, name, xtitle, binsx, binsy, canx=800, cany=800, logx=False):
         self.name = name
         self.logx = logx
-        binsy = np.linspace( ymin, ymax, ny+1)
-        if logx:
-            binsx = np.logspace( xmin, xmax, nx+1)
-        else:
-            binsx = np.linspace( xmin, xmax, nx+1)
+        nx = len(binsx)-1
+        ny = len(binsy)-1
         self.h2d = TH2F( self.name, self.name,
                          nx, binsx, ny, binsy)
         self.h2d.SetXTitle( xtitle )
         self.h2d.binsx = binsx
         self.canvas = None
+        self.canx=canx
+        self.cany=cany
                          
     def fill(self, tree, var, cut):
         tree.Draw('{var}>>+{hname}'.format(var=var, hname=self.name),
@@ -70,8 +72,8 @@ class Residual(object):
         print self.name, function_name, chi2/ndf
         return results 
 
-    def draw(self, style=sRed):
-        self.canvas = TCanvas(self.name, self.name, 800, 800)
+    def draw(self, style):
+        self.canvas = TCanvas(self.name, self.name, self.canx, self.cany )
         self.canvas.Divide(2,2)
         if self.logx:
             for ipad in range(4):
@@ -91,6 +93,9 @@ class Residual(object):
              0, 0.45, style, gPad) 
         self.rms.SetLineColor(style.lineColor)
         self.rms.Draw('same')
+        self.canvas.cd(4)
+        gPad.SetLogx(0)
+        self.fit_slice(1)
 
 
 def rmsX( h2d, graphics=False ):
@@ -114,7 +119,7 @@ def rmsX( h2d, graphics=False ):
     return hist
 
 
-def draw(hist, xtitle, ytitle, ymin, ymax, style, pad=None):
+def draw(hist, xtitle, ytitle, ymin, ymax, style, pad=None, options=''):
     if pad is None:
         pad = TCanvas(hist.GetName(), hist.GetName(),
                       600, 600)
@@ -122,7 +127,7 @@ def draw(hist, xtitle, ytitle, ymin, ymax, style, pad=None):
     hist.SetXTitle(xtitle)
     hist.SetYTitle(ytitle)
     style.formatHisto(hist) 
-    hist.Draw()
+    hist.Draw(options)
     hist.GetYaxis().SetRangeUser(ymin, ymax)
     # hist.GetXaxis().SetRangeUser(xmin, xmax)
     formatPad(pad)
@@ -130,52 +135,50 @@ def draw(hist, xtitle, ytitle, ymin, ymax, style, pad=None):
     return pad
 
 
+def build_plot( name, file_pattern, binsx, binsy, ptcut):
+    chain = Chain(None, file_pattern)
+    plot =  Residual(name, 'p_{T} (GeV)',
+                     binsx, binsy, logx=True)
+    plot.fill(
+        chain,
+        'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
+        'jet1_genJet_pt>0 && abs(jet1_eta)<1.4 && jet1_pt>{ptcut} && jet1_dr2<0.01'.format(
+        ptcut=ptcut
+        ) )
+    plot.fill(
+        chain,
+        'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
+        'jet2_genJet_pt>0 && abs(jet2_eta)<1.4 && jet2_pt>{ptcut} && jet2_dr2<0.01'.format(
+        ptcut=ptcut
+        ) ) 
+    plot.fit()
+    # results = plot.fit_resolution('fun_respt')
+    return plot
 
 
 if __name__ == '__main__':
 
     import sys
 
+    binsx_low = np.linspace( 10, 300, 30)
+    binsx_high = np.linspace( 350, 1000, 14)
+    binsx = np.concatenate( [binsx_low, binsx_high] )    
+    nbinsy = 100
+    binsy = np.linspace( 0, 3, nbinsy+1)
+
     args = sys.argv[1:]
+    pf_file_pattern = args[0]
+    pf_plot = build_plot( 'pf_barrel', pf_file_pattern, binsx, binsy,
+                          ptcut=1)
+    pf_plot.draw(sRed)
+    if len(args)==2:
+        calo_file_pattern = args[1]
+        calo_plot = build_plot( 'calo_barrel', calo_file_pattern, binsx, binsy,
+                                ptcut=1)
+        calo_plot.draw(sBlue)
 
-    file_pattern = args[0]
-    chain = Chain(None, file_pattern)
-
-##     pt1 =  Residual('pt1', 100, 0, 200, 100, 0, 3)
-##     pt1.fill( chain,
-##               'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
-##               'jet1_genJet_pt>0')
-##     pt1.fit()
-##     pt1.draw()
-
-##     pt2 =  Residual('pt2', 100, 0, 200, 100, 0, 3)
-##     pt2.fill( chain,
-##               'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
-##               'jet2_genJet_pt>0')
-##     pt2.fit()
-##     pt2.draw()
-
-    
     # chain.SetAlias('jet1_dr2', '(jet1_eta - jet1_genJet_eta)**2 + (jet1_phi-jet1_genJet_phi)**2')
     # chain.SetAlias('jet2_dr2', '(jet2_eta - jet2_genJet_eta)**2 + (jet2_phi-jet2_genJet_phi)**2')
-    
-
-    nbinsx = 50
-    nbinsy = 100
-    
-    plot_vs_pt_barrel =  Residual('plot_vs_pt_barrel', 'p_{T} (GeV)',
-                                  50, 1, 3, nbinsy, 0, 3, logx=True)
-    plot_vs_pt_barrel.fill( chain,
-                 'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
-                 'jet1_genJet_pt>0 && abs(jet1_eta)<1.4 && jet1_pt>5 && jet1_dr2<0.01 && jet3_pt/jet1_pt<0.3')
-    plot_vs_pt_barrel.fill( chain,
-                 'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
-                 'jet2_genJet_pt>0 && abs(jet2_eta)<1.4 && jet2_pt>5 && jet2_dr2<0.01 && jet3_pt/jet1_pt<0.3')
-    plot_vs_pt_barrel.fit()
-    # results = plot_vs_pt_barrel.fit_resolution('fun_respt')
-    plot_vs_pt_barrel.draw()
-    c = TCanvas()
-    
     
 
 
