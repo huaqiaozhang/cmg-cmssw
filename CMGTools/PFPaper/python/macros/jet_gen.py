@@ -27,6 +27,7 @@ class Residual(object):
     
     def __init__(self, name, xtitle, nx, xmin, xmax, ny, ymin, ymax, logx=False):
         self.name = name
+        self.logx = logx
         binsy = np.linspace( ymin, ymax, ny+1)
         if logx:
             binsx = np.logspace( xmin, xmax, nx+1)
@@ -41,7 +42,15 @@ class Residual(object):
     def fill(self, tree, var, cut):
         tree.Draw('{var}>>+{hname}'.format(var=var, hname=self.name),
                   cut, 'goff')
-        
+
+
+    def fit_slice(self, ibin):
+        slice = self.h2d.ProjectionY( '{name}_bin_{bin}'.format(name=self.name,
+                                                                bin = ibin), ibin, ibin )
+        slice.Fit('gaus')
+        gPad.Update()
+            
+
     def fit(self):
         self.h2d.FitSlicesY()
         self.mean = gDirectory.Get(self.name + '_1')
@@ -64,6 +73,12 @@ class Residual(object):
     def draw(self, style=sRed):
         self.canvas = TCanvas(self.name, self.name, 800, 800)
         self.canvas.Divide(2,2)
+        if self.logx:
+            for ipad in range(4):
+                self.canvas.cd(ipad+1)
+                gPad.SetLogx()
+                gPad.SetGridx()
+                gPad.SetGridy()
         self.canvas.cd(1)
         self.h2d.Draw('col')
         self.canvas.cd(2)
@@ -73,7 +88,7 @@ class Residual(object):
         self.armean.Draw('same')
         self.canvas.cd(3)
         draw(self.sigma, self.h2d.GetXaxis().GetTitle(), 'resolution',
-             0, 0.5, style, gPad) 
+             0, 0.45, style, gPad) 
         self.rms.SetLineColor(style.lineColor)
         self.rms.Draw('same')
 
@@ -140,23 +155,28 @@ if __name__ == '__main__':
 ##     pt2.fit()
 ##     pt2.draw()
 
-
+    
+    # chain.SetAlias('jet1_dr2', '(jet1_eta - jet1_genJet_eta)**2 + (jet1_phi-jet1_genJet_phi)**2')
+    # chain.SetAlias('jet2_dr2', '(jet2_eta - jet2_genJet_eta)**2 + (jet2_phi-jet2_genJet_phi)**2')
+    
 
     nbinsx = 50
     nbinsy = 100
     
     plot_vs_pt_barrel =  Residual('plot_vs_pt_barrel', 'p_{T} (GeV)',
-                                  100, 0, 3, nbinsy, 0, 3, logx=True)
+                                  50, 1, 3, nbinsy, 0, 3, logx=True)
     plot_vs_pt_barrel.fill( chain,
                  'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
-                 'jet1_genJet_pt>0 && abs(jet1_eta)<1.4')
+                 'jet1_genJet_pt>0 && abs(jet1_eta)<1.4 && jet1_pt>5 && jet1_dr2<0.01 && jet3_pt/jet1_pt<0.3')
     plot_vs_pt_barrel.fill( chain,
                  'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
-                 'jet2_genJet_pt>0 && abs(jet2_eta)<1.4')
+                 'jet2_genJet_pt>0 && abs(jet2_eta)<1.4 && jet2_pt>5 && jet2_dr2<0.01 && jet3_pt/jet1_pt<0.3')
     plot_vs_pt_barrel.fit()
     # results = plot_vs_pt_barrel.fit_resolution('fun_respt')
     plot_vs_pt_barrel.draw()
-
+    c = TCanvas()
+    
+    
 
 
 

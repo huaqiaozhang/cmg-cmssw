@@ -17,9 +17,6 @@ class PFTreeProducer( TreeAnalyzerNumpy ):
         var( tr, 'lumi', int)
         var( tr, 'evt', int)
 
-        bookParticle(tr, 'diL')
-        var(tr, 'diL_mass')
-
         bookLepton(tr, 'leg1')
         bookLepton(tr, 'leg2')
 
@@ -27,8 +24,7 @@ class PFTreeProducer( TreeAnalyzerNumpy ):
         var( tr, 'nJets20')
         bookJet(tr, 'jet1')
         bookJet(tr, 'jet2')
-
-        # bookVBF( tr, 'VBF' )
+        bookJet(tr, 'jet3')
 
         var( tr, 'nVert')
         var( tr, 'weight')
@@ -46,12 +42,8 @@ class PFTreeProducer( TreeAnalyzerNumpy ):
         if hasattr(event, 'diLepton'):
             fillParticle(tr, 'diL', event.diLepton)
             fill(tr, 'diL_mass', event.diLepton.mass())
-##         fillParticle(tr, 'diLRaw', event.diLeptonRaw)
-##         fill(tr, 'diLRaw_mass', event.diLeptonRaw.mass())
             fillLepton(tr, 'leg1', event.diLepton.leg1())
             fillLepton(tr, 'leg2', event.diLepton.leg2())
-##         fillLepton(tr, 'leg1Raw', event.diLeptonRaw.leg1())
-##         fillLepton(tr, 'leg2Raw', event.diLeptonRaw.leg2())
 
 
         fill(tr, 'nJets20', len(event.cleanJets) )
@@ -62,6 +54,8 @@ class PFTreeProducer( TreeAnalyzerNumpy ):
             fillJet(tr, 'jet1', event.cleanJets[0] )
         if nJets>=2:
             fillJet(tr, 'jet2', event.cleanJets[1] )
+        if nJets>=3:
+            fillJet(tr, 'jet3', event.cleanJets[2] )
             
 
         fill(tr, 'nVert', len(event.goodVertices) )

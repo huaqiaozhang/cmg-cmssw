@@ -37,19 +37,11 @@ pfAna = cfg.Analyzer(
     )
 
 
-## jetAna = cfg.Analyzer(
-##     'PFPaperJetAnalyzer',
-##     jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
-##     genJetHandle = ('ak5GenJets', 'std::vector< reco::GenJet >'),
-##     genParticleHandle = ('genParticles', 'std::vector< reco::GenParticle >'),
-##     jetPt = 10.,
-##     jetEta = 4.7,
-##     )
 
 jetAna = cfg.Analyzer(
     'PFPaperJetAnalyzer',
-    jetHandle = ('ak5CaloJets', 'std::vector< reco::CaloJet >'),
-    # jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
+    # jetHandle = ('ak5CaloJets', 'std::vector< reco::CaloJet >'),
+    jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
     genJetHandle = ('ak5GenJets', 'std::vector< reco::GenJet >'),
     genParticleHandle = ('genParticles', 'std::vector< reco::GenParticle >'),
     jetPt = 1.,
