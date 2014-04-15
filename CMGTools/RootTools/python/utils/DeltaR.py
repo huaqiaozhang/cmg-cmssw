@@ -95,6 +95,7 @@ def matchObjectCollection( objects, matchCollection, deltaR2Max):
         bm, dr2 = bestMatch( object, matchCollection )
         if dr2<deltaR2Max:
             pairs[object] = bm
+            pairs[object].dr2 = dr2
         else:
             pairs[object] = None            
     return pairs
