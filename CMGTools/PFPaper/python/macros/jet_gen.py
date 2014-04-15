@@ -3,6 +3,8 @@ from CMGTools.RootTools.PyRoot import *
 from CMGTools.RootTools.Style import *
 from ROOT import TF1
 
+import numpy as np
+
 from time import sleep
 
 sRed.markerSize = 0.8
@@ -15,19 +17,25 @@ class Profile( object ):
         
 
     
-fun_respt = TF1('fun_respt', 'sqrt( ([0]/x)**2 + ([1]*sqrt(x)/x)**2 + ([2])**2 )', 30, 200)
-
-
+fun_respt = TF1('fun_respt',
+                'sqrt( ([0]/x)**2 + '
+                '( [1]/sqrt(x) )**2 + '
+                '([2])**2 )',
+                100, 1000)
 
 class Residual(object):
     
-    def __init__(self, name, xtitle, nx, xmin, xmax, ny, ymin, ymax ):
+    def __init__(self, name, xtitle, nx, xmin, xmax, ny, ymin, ymax, logx=False):
         self.name = name
-        
+        binsy = np.linspace( ymin, ymax, ny+1)
+        if logx:
+            binsx = np.logspace( xmin, xmax, nx+1)
+        else:
+            binsx = np.linspace( xmin, xmax, nx+1)
         self.h2d = TH2F( self.name, self.name,
-                         nx, xmin, xmax,
-                         ny, ymin, ymax)
+                         nx, binsx, ny, binsy)
         self.h2d.SetXTitle( xtitle )
+        self.h2d.binsx = binsx
         self.canvas = None
                          
     def fill(self, tree, var, cut):
@@ -40,8 +48,10 @@ class Residual(object):
         self.mean.SetTitle('')
         self.sigma = gDirectory.Get(self.name + '_2')
         self.sigma.SetTitle('')
+        self.sigma.Divide(self.mean)
         self.armean = self.h2d.ProfileX()
         self.rms = rmsX( self.h2d )
+        self.rms.Divide(self.mean)
 
     def fit_resolution(self, function_name):
         results = self.sigma.Fit(function_name, 'S', 'goff')
@@ -58,12 +68,12 @@ class Residual(object):
         self.h2d.Draw('col')
         self.canvas.cd(2)
         draw(self.mean, self.h2d.GetXaxis().GetTitle(), 'response', 
-             0.6, 1.1, 20, 200, style, gPad)
+             0.5, 1.1, style, gPad)
         self.armean.SetLineColor(style.lineColor)
         self.armean.Draw('same')
         self.canvas.cd(3)
         draw(self.sigma, self.h2d.GetXaxis().GetTitle(), 'resolution',
-             0, 0.2, 20, 200, style, gPad) 
+             0, 0.5, style, gPad) 
         self.rms.SetLineColor(style.lineColor)
         self.rms.Draw('same')
 
@@ -74,7 +84,7 @@ def rmsX( h2d, graphics=False ):
     '''
     hist = TH1D( '_'.join( [ h2d.GetName(), 'rmx'] ),
                  ';{xtitle};RMS'.format(xtitle=h2d.GetXaxis().GetTitle()),
-                 h2d.GetNbinsX(), h2d.GetXaxis().GetXmin(), h2d.GetXaxis().GetXmax() )
+                 h2d.GetNbinsX(), h2d.binsx )
     for bin in range( h2d.GetNbinsX() ):
         bin += 1
         proj = h2d.ProjectionY('',bin, bin, '')
@@ -89,7 +99,7 @@ def rmsX( h2d, graphics=False ):
     return hist
 
 
-def draw(hist, xtitle, ytitle, ymin, ymax, xmin, xmax, style, pad=None):
+def draw(hist, xtitle, ytitle, ymin, ymax, style, pad=None):
     if pad is None:
         pad = TCanvas(hist.GetName(), hist.GetName(),
                       600, 600)
@@ -99,7 +109,7 @@ def draw(hist, xtitle, ytitle, ymin, ymax, xmin, xmax, style, pad=None):
     style.formatHisto(hist) 
     hist.Draw()
     hist.GetYaxis().SetRangeUser(ymin, ymax)
-    hist.GetXaxis().SetRangeUser(xmin, xmax)
+    # hist.GetXaxis().SetRangeUser(xmin, xmax)
     formatPad(pad)
     pad.Update()
     return pad
@@ -134,9 +144,9 @@ if __name__ == '__main__':
 
     nbinsx = 50
     nbinsy = 100
-
+    
     plot_vs_pt_barrel =  Residual('plot_vs_pt_barrel', 'p_{T} (GeV)',
-                                  nbinsx, 20, 200, nbinsy, 0, 3)
+                                  100, 0, 3, nbinsy, 0, 3, logx=True)
     plot_vs_pt_barrel.fill( chain,
                  'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
                  'jet1_genJet_pt>0 && abs(jet1_eta)<1.4')
@@ -144,7 +154,7 @@ if __name__ == '__main__':
                  'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
                  'jet2_genJet_pt>0 && abs(jet2_eta)<1.4')
     plot_vs_pt_barrel.fit()
-    results = plot_vs_pt_barrel.fit_resolution('fun_respt')
+    # results = plot_vs_pt_barrel.fit_resolution('fun_respt')
     plot_vs_pt_barrel.draw()
 
 
@@ -182,10 +192,10 @@ if __name__ == '__main__':
 ##                             nbinsx, -5, 5, nbinsy, 0, 3)
 ##     plot_vs_eta.fill( chain,
 ##                       'jet1_pt / jet1_genJet_eta : jet1_genJet_eta',
-##                       'jet1_genJet_pt>20')
+##                       'jet1_pt>20')
 ##     plot_vs_eta.fill( chain,
 ##                       'jet2_pt / jet2_genJet_pt : jet2_genJet_eta',
-##                       'jet2_genJet_pt>20')
+##                       'jet2_pt>20')
 ##     plot_vs_eta.fit()
 ##     plot_vs_eta.draw()
 
