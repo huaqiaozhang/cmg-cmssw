@@ -54,7 +54,6 @@ if __name__ == '__main__':
     data.printInfo()
     data.printFiles(abspath = options.abspath,
                     info = info)
-    pprint.pprint( data.filesAndSizes )
     if options.report:
         pprint.pprint( data.report )
 
