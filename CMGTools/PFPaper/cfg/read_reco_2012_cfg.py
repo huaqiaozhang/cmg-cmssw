@@ -40,8 +40,8 @@ pfAna = cfg.Analyzer(
 
 jetAna = cfg.Analyzer(
     'PFPaperJetAnalyzer',
-    # jetHandle = ('ak5CaloJets', 'std::vector< reco::CaloJet >'),
-    jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
+    jetHandle = ('ak5CaloJets', 'std::vector< reco::CaloJet >'),
+    # jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
     genJetHandle = ('ak5GenJets', 'std::vector< reco::GenJet >'),
     genParticleHandle = ('genParticles', 'std::vector< reco::GenParticle >'),
     jetPt = 1.,
@@ -62,10 +62,10 @@ from CMGTools.RootTools.utils.getFiles import getFiles
 
 QCD = cfg.Component(
     'QCD',
-    files = ['RECO.root'],
-    #files = getFiles(
-    #  '/QCDFlatPt/5_3_14_automc_noPU/AODSIM_RECOSIM_DISPLAY',
-    #  'cmgtools', 'aod.*root', useCache=False),
+    # files = ['RECO.root'],
+    files = getFiles(
+      '/QCDFlatPt/5_3_14_automc_noPU/AODSIM_RECOSIM_DISPLAY',
+      'cmgtools', 'reco.*root', useCache=False),
     splitFactor = 12
     )
 QCD.isMC = True

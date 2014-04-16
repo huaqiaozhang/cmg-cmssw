@@ -143,12 +143,12 @@ def build_plot( name, file_pattern, binsx, binsy, ptcut, style):
                      binsx, binsy, logx=True, style=style)
     plot.fill(
         'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
-        'jet1_genJet_pt>0 && abs(jet1_eta)<1.4 && jet1_pt>{ptcut} && jet1_dr2<0.01'.format(
+        'jet1_genJet_pt>0 && abs(jet1_eta)<1.4 && jet1_pt>{ptcut} && jet1_genJet_dr2<0.01'.format(
         ptcut=ptcut
         ) )
     plot.fill(
         'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
-        'jet2_genJet_pt>0 && abs(jet2_eta)<1.4 && jet2_pt>{ptcut} && jet2_dr2<0.01'.format(
+        'jet2_genJet_pt>0 && abs(jet2_eta)<1.4 && jet2_pt>{ptcut} && jet2_genJet_dr2<0.01'.format(
         ptcut=ptcut
         ) ) 
     plot.fit()
@@ -167,15 +167,30 @@ if __name__ == '__main__':
     nbinsy = 100
     binsy = np.linspace( 0, 3, nbinsy+1)
 
+    if len( sys.argv )<2:
+        print ''' usage: jet_gen.py <pattern1> [pattern2]
+        patterns = <calo or pf>:wildcard_path
+        '''
+        sys.exit(1)
+
     args = sys.argv[1:]
-    pf_file_pattern = args[0]
-    pf_plot = build_plot( 'pf_barrel', pf_file_pattern, binsx, binsy,
-                          ptcut=5, style=sRed)
-    pf_plot.draw()
+
+    def process_chain( arg ):
+        jettype, file_pattern = args[0].split(':')
+        style = sRed
+        ptcut = 5
+        if jettype=='calo':
+            style = sBlue
+            ptcut = 3
+        plot = build_plot( '{jettype}_barrel'.format(jettype=jettype), file_pattern,
+                           binsx, binsy,
+                           ptcut=ptcut, style=style)
+        plot.draw()
+        return plot
+
+    plot0 = process_chain( args[0] )
     if len(args)==2:
-        calo_file_pattern = args[1]
-        calo_plot = build_plot( 'calo_barrel', calo_file_pattern, binsx, binsy,
-                                ptcut=3, style=sBlue)
-        calo_plot.draw()
+        plot1 = process_chain( args[1] )
+    
 
-
+    
