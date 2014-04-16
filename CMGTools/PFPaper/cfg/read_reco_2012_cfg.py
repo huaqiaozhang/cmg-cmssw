@@ -62,18 +62,14 @@ from CMGTools.RootTools.utils.getFiles import getFiles
 
 QCD = cfg.Component(
     'QCD',
-    files = getFiles(
-      '/QCDFlatPt/5_3_14_automc_noPU/AODSIM_RECOSIM_DISPLAY',
-      'cmgtools', 'aod.*root', useCache=False),
+    files = ['RECO.root'],
+    #files = getFiles(
+    #  '/QCDFlatPt/5_3_14_automc_noPU/AODSIM_RECOSIM_DISPLAY',
+    #  'cmgtools', 'aod.*root', useCache=False),
     splitFactor = 12
     )
 QCD.isMC = True
-
 comp = QCD
-comp.files = getFiles(
-    '/QCDFlatPt/5_3_14_automc_noPU/AODSIM_RECOSIM_DISPLAY',
-    'cmgtools', 'aod.*root', useCache=False
-    )
 
 
 ###############################################################################
@@ -92,7 +88,7 @@ sequence = cfg.Sequence( [
 
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 0
+test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore

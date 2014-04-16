@@ -21,9 +21,10 @@ fun_respt = TF1('fun_respt',
 
 class Residual(object):
     
-    def __init__(self, name, xtitle, binsx, binsy, canx=800, cany=800,
+    def __init__(self, name, tree, xtitle, binsx, binsy, canx=800, cany=800,
                  logx=False, style=sRed):
         self.name = name
+        self.tree = tree
         self.logx = logx
         nx = len(binsx)-1
         ny = len(binsy)-1
@@ -36,9 +37,9 @@ class Residual(object):
         self.cany=cany
         self.style=style
                          
-    def fill(self, tree, var, cut):
-        tree.Draw('{var}>>+{hname}'.format(var=var, hname=self.name),
-                  cut, 'goff')
+    def fill(self, var, cut):
+        self.tree.Draw('{var}>>+{hname}'.format(var=var, hname=self.name),
+                       cut, 'goff')
 
     def fit_slice(self, ibin):
         slice = self.h2d.ProjectionY( '{name}_bin_{bin}'.format(name=self.name,
@@ -138,16 +139,14 @@ def draw(hist, xtitle, ytitle, ymin, ymax, style, pad=None, options=''):
 
 def build_plot( name, file_pattern, binsx, binsy, ptcut, style):
     chain = Chain(None, file_pattern)
-    plot =  Residual(name, 'p_{T} (GeV)',
+    plot =  Residual(name, chain, 'p_{T} (GeV)',
                      binsx, binsy, logx=True, style=style)
     plot.fill(
-        chain,
         'jet1_pt / jet1_genJet_pt : jet1_genJet_pt',
         'jet1_genJet_pt>0 && abs(jet1_eta)<1.4 && jet1_pt>{ptcut} && jet1_dr2<0.01'.format(
         ptcut=ptcut
         ) )
     plot.fill(
-        chain,
         'jet2_pt / jet2_genJet_pt : jet2_genJet_pt',
         'jet2_genJet_pt>0 && abs(jet2_eta)<1.4 && jet2_pt>{ptcut} && jet2_dr2<0.01'.format(
         ptcut=ptcut
@@ -162,7 +161,7 @@ if __name__ == '__main__':
 
     import sys
 
-    binsx_low = np.linspace( 20, 300, 29)
+    binsx_low = np.linspace( 10, 300, 30)
     binsx_high = np.linspace( 350, 1000, 14)
     binsx = np.concatenate( [binsx_low, binsx_high] )    
     nbinsy = 100

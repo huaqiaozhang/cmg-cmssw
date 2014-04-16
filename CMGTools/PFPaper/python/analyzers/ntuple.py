@@ -24,12 +24,10 @@ def fillParticle( tree, pName, particle ):
 
 def bookGenParticle(tree, pName):
     bookParticle(tree, pName)
-    var(tree, '{pName}_mass'.format(pName=pName))
     var(tree, '{pName}_pdgId'.format(pName=pName))
     
 def fillGenParticle( tree, pName, particle ):
     fillParticle( tree, pName, particle )
-    fill(tree, '{pName}_mass'.format(pName=pName), particle.mass() )
     fill(tree, '{pName}_pdgId'.format(pName=pName), particle.pdgId() )
 
 # di-tau
@@ -209,9 +207,11 @@ def bookJet( tree, pName ):
     var(tree, '{pName}_hhfFrac'.format(pName=pName))
     var(tree, '{pName}_ehfFrac'.format(pName=pName))
     var(tree, '{pName}_rawFactor'.format(pName=pName))    
-    var(tree, '{pName}_dr2'.format(pName=pName))    
+    var(tree, '{pName}_genJet_dr2'.format(pName=pName))    
+    var(tree, '{pName}_genPart3_dr2'.format(pName=pName))    
     bookParticle(tree, '{pName}_leg'.format(pName=pName))
     bookParticle(tree, '{pName}_genJet'.format(pName=pName))
+    bookGenParticle(tree, '{pName}_genPart3'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
@@ -225,10 +225,15 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_rawFactor'.format(pName=pName), jet.rawFactor() )
     if hasattr(jet, 'leg') and jet.leg:
         fillParticle(tree, '{pName}_leg'.format(pName=pName), jet.leg )
-    dr2 = -1
+    genJet_dr2 = -1
     if hasattr(jet, 'genJet') and jet.genJet:
         fillParticle(tree, '{pName}_genJet'.format(pName=pName), jet.genJet )
-        dr2 = jet.genJet.dr2
-    fill(tree, '{pName}_dr2'.format(pName=pName), dr2 )
+        genJet_dr2 = jet.genJet.dr2
+    fill(tree, '{pName}_genJet_dr2'.format(pName=pName), genJet_dr2 )
+    genPart3_dr2 = -1
+    if hasattr(jet, 'genParticle3') and jet.genParticle3:
+        fillGenParticle(tree, '{pName}_genPart3'.format(pName=pName), jet.genParticle3 )
+        genPart3_dr2 = jet.genParticle3.dr2
+    fill(tree, '{pName}_genPart3_dr2'.format(pName=pName), genPart3_dr2 )
         
    

@@ -74,12 +74,12 @@ class PFPaperJetAnalyzer( Analyzer ):
         count.register('all events')
         count.register('at least 2 good jets')
         count.register('at least 2 clean jets')
+
         
     def process(self, iEvent, event):
         
         self.readCollections( iEvent )
         cmgJets = self.handles['jets'].product()
-
 
         allJets = []
         event.jets = []
@@ -88,27 +88,19 @@ class PFPaperJetAnalyzer( Analyzer ):
         leptons = []
         if hasattr(event, 'selectedLeptons'):
             leptons = event.selectedLeptons
-
-
-        genJets = None
-        if self.cfg_comp.isMC:
-            genJets = map( GenJet, self.mchandles['genJets'].product() ) 
             
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
             allJets.append( jet )
-            if self.cfg_comp.isMC and hasattr( self.cfg_comp, 'jetScale'):
-                scale = random.gauss( self.cfg_comp.jetScale,
-                                      self.cfg_comp.jetSmear )
-                jet.scaleEnergy( scale )
-            if genJets:
-                # Use DeltaR = 0.25 matching like JetMET
-                pairs = matchObjectCollection( [jet], genJets, 0.25*0.25)
-                if pairs[jet] is None:
-                    pass
-                    #jet.genJet = None
-                else:
-                    jet.genJet = pairs[jet]
+
+##             if genJets:
+##                 # Use DeltaR = 0.25 matching like JetMET
+##                 pairs = matchObjectCollection( [jet], genJets, 0.25*0.25)
+##                 if pairs[jet] is None:
+##                     jet.genJet = None
+##                 else:
+##                     jet.genJet = pairs[jet]
+                    
             if self.testJet( jet ):
                 event.jets.append(jet)
                 
@@ -118,37 +110,18 @@ class PFPaperJetAnalyzer( Analyzer ):
                                                         masks = leptons,
                                                         deltaRMin = 0.5 )
         
-
-        pairs = matchObjectCollection( leptons, allJets, 0.5*0.5)
-
-
-        # associating a jet to each lepton
-        for lepton in leptons:
-            jet = pairs[lepton]
-            if jet is None:
-                lepton.jet = lepton
-            else:
-                lepton.jet = jet
-
-        # associating a leg to each clean jet
-        invpairs = matchObjectCollection( event.cleanJets, leptons, 99999. )
-        for jet in event.cleanJets:
-            leg = invpairs[jet]
-            jet.leg = leg
-
-        for jet in event.cleanJets:
-            jet.matchGenParton=999.0
-
-        if self.cfg_comp.isMC and "BB" in self.cfg_comp.name:
-            genParticles = self.mchandles['genParticles'].product()
-            event.genParticles = map( GenParticle, genParticles)
-            for gen in genParticles:
-                if abs(gen.pdgId())==5 and gen.mother() and abs(gen.mother().pdgId())==21:
-                    for jet in event.cleanJets:
-                        dR=deltaR2(jet.eta(), jet.phi(), gen.eta(), gen.phi() )
-                        if dR<jet.matchGenParton:
-                            jet.matchGenParton=dR
-
+        if self.cfg_comp.isMC:
+            genJets = map( GenJet, self.mchandles['genJets'].product() )
+            genStatus3 = [ GenParticle(ptc) for ptc in self.mchandles['genParticles'].product() \
+                           if ptc.status()==3 ]
+            dr2max = 0.5*0.5
+            match_genJets = matchObjectCollection( event.jets, genJets, dr2max )
+            match_genParticle3 = matchObjectCollection( event.jets, genStatus3, dr2max)
+            for jet in event.jets:
+                jet.genJet = match_genJets[jet]
+                jet.genParticle3 = match_genParticle3[jet]
+            
+        
         event.jets30 = [jet for jet in event.jets if jet.pt()>30]
         event.cleanJets30 = [jet for jet in event.cleanJets if jet.pt()>30]
         
