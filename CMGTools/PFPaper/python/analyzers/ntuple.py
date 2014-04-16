@@ -185,19 +185,12 @@ def fillTau( tree, pName, tau ):
 
 # jet
 
-##    /// particle types
-##     enum ParticleType {
-##       X=0,     // undefined
-##       h,       // charged hadron
-##       e,       // electron 
-##       mu,      // muon 
-##       gamma,   // photon
-##       h0,      // neutral hadron
-##       h_HF,        // HF tower identified as a hadron
-##       egamma_HF    // HF tower identified as an EM particle
-##     };
 
-def bookJet( tree, pName ):
+def bookParticleJet( tree, pName):
+    '''For all kinds of jets.
+    For pf and gen jets, the component variables are filled.
+    For calo jets, they are filled and dummy.
+    '''
     bookParticle(tree, pName )
     var(tree, '{pName}_chFrac'.format(pName=pName))
     var(tree, '{pName}_eFrac'.format(pName=pName))
@@ -209,11 +202,16 @@ def bookJet( tree, pName ):
     var(tree, '{pName}_rawFactor'.format(pName=pName))    
     var(tree, '{pName}_genJet_dr2'.format(pName=pName))    
     var(tree, '{pName}_genPart3_dr2'.format(pName=pName))    
+    
+
+def bookJet( tree, pName ):
+    bookParticleJet(tree, pName ) 
     bookParticle(tree, '{pName}_leg'.format(pName=pName))
-    bookParticle(tree, '{pName}_genJet'.format(pName=pName))
+    bookParticleJet(tree, '{pName}_genJet'.format(pName=pName))
     bookGenParticle(tree, '{pName}_genPart3'.format(pName=pName))
 
-def fillJet( tree, pName, jet ):
+
+def fillParticleJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
     fill(tree, '{pName}_chFrac'.format(pName=pName), jet.component(1).fraction() )
     fill(tree, '{pName}_eFrac'.format(pName=pName), jet.component(2).fraction() )
@@ -223,11 +221,15 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_hhfFrac'.format(pName=pName), jet.component(6).fraction() )
     fill(tree, '{pName}_ehfFrac'.format(pName=pName), jet.component(7).fraction() )
     fill(tree, '{pName}_rawFactor'.format(pName=pName), jet.rawFactor() )
+
+
+def fillJet( tree, pName, jet ):
+    fillParticleJet(tree, pName, jet )
     if hasattr(jet, 'leg') and jet.leg:
         fillParticle(tree, '{pName}_leg'.format(pName=pName), jet.leg )
     genJet_dr2 = -1
     if hasattr(jet, 'genJet') and jet.genJet:
-        fillParticle(tree, '{pName}_genJet'.format(pName=pName), jet.genJet )
+        fillParticleJet(tree, '{pName}_genJet'.format(pName=pName), jet.genJet )
         genJet_dr2 = jet.genJet.dr2
     fill(tree, '{pName}_genJet_dr2'.format(pName=pName), genJet_dr2 )
     genPart3_dr2 = -1

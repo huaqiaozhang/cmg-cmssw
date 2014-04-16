@@ -1,35 +1,13 @@
 import random
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObject import PhysicsObject
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
+from CMGTools.PFPaper.analyzers.Jets import   PFJet, GenJet, CaloJet, BaseJet
 
-class Jet(PhysicsObject):
-    '''Jet class designed to wrap an uncorrected reco::Jet of any type.'''
-    def __init__(self, physobj):
-        super(Jet,self).__init__(physobj)
-
-    # for now, a default, dummy component
-    class DummyComponent(object):
-        def fraction(self):
-            return -1
-    dummy_component = DummyComponent()
-
-    def component( self, dummy ):
-        return self.__class__.dummy_component
-
-    def rawFactor(self):
-        '''returns 1 (correction factor for uncorrected jets)'''
-        return 1.
-
-
-
-class GenJet(PhysicsObject):
-    pass
 
 
 
@@ -63,6 +41,9 @@ class PFPaperJetAnalyzer( Analyzer ):
         super(PFPaperJetAnalyzer, self).declareHandles()
 
         self.handles['jets'] = AutoHandle( * self.cfg_ana.jetHandle )
+        self.JetClass = PFJet
+        if self.cfg_ana.jetHandle[0].find('Calo')!=-1:
+            self.JetClass = CaloJet
         if self.cfg_comp.isMC:
             self.mchandles['genParticles'] = AutoHandle( * self.cfg_ana.genParticleHandle ) 
             self.mchandles['genJets'] = AutoHandle( * self.cfg_ana.genJetHandle ) 
@@ -90,16 +71,8 @@ class PFPaperJetAnalyzer( Analyzer ):
             leptons = event.selectedLeptons
             
         for cmgJet in cmgJets:
-            jet = Jet( cmgJet )
+            jet = self.JetClass( cmgJet )
             allJets.append( jet )
-
-##             if genJets:
-##                 # Use DeltaR = 0.25 matching like JetMET
-##                 pairs = matchObjectCollection( [jet], genJets, 0.25*0.25)
-##                 if pairs[jet] is None:
-##                     jet.genJet = None
-##                 else:
-##                     jet.genJet = pairs[jet]
                     
             if self.testJet( jet ):
                 event.jets.append(jet)
