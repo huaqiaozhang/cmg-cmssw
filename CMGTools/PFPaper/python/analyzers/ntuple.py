@@ -1,5 +1,6 @@
 #!/bin/env python
 
+
 def var( tree, varName, type=float ):
     tree.var(varName, type)
 
@@ -14,6 +15,7 @@ def bookParticle( tree, pName ):
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_charge'.format(pName=pName))
     var(tree, '{pName}_energy'.format(pName=pName))
+    var(tree, '{pName}_et'.format(pName=pName))
 
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
@@ -21,6 +23,7 @@ def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
     fill(tree, '{pName}_energy'.format(pName=pName), particle.energy() )
+    fill(tree, '{pName}_et'.format(pName=pName), particle.et() )
 
 def bookGenParticle(tree, pName):
     bookParticle(tree, pName)
@@ -230,12 +233,12 @@ def fillJet( tree, pName, jet ):
     genJet_dr2 = -1
     if hasattr(jet, 'genJet') and jet.genJet:
         fillParticleJet(tree, '{pName}_genJet'.format(pName=pName), jet.genJet )
-        genJet_dr2 = jet.genJet.dr2
+        genJet_dr2 = jet.genJet_dr2
     fill(tree, '{pName}_genJet_dr2'.format(pName=pName), genJet_dr2 )
     genPart3_dr2 = -1
     if hasattr(jet, 'genParticle3') and jet.genParticle3:
         fillGenParticle(tree, '{pName}_genPart3'.format(pName=pName), jet.genParticle3 )
-        genPart3_dr2 = jet.genParticle3.dr2
+        genPart3_dr2 = jet.genParticle3_dr2
     fill(tree, '{pName}_genPart3_dr2'.format(pName=pName), genPart3_dr2 )
         
    

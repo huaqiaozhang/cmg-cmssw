@@ -9,11 +9,18 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 
 pathsAndFilters = []
 
+printAna = cfg.Analyzer(
+    'PrintAnalyzer'
+    )
+
 eventSelector = cfg.Analyzer(
     'EventSelector',
     toSelect = [
+      # 204,
+      2464
     # here put the event numbers (actual event numbers from CMSSW)
-    ]
+    ],
+    iEv = True
     )
 
 
@@ -40,12 +47,12 @@ pfAna = cfg.Analyzer(
 
 jetAna = cfg.Analyzer(
     'PFPaperJetAnalyzer',
-    jetHandle = ('ak5CaloJets', 'std::vector< reco::CaloJet >'),
-    # jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
+    # jetHandle = ('ak5CaloJets', 'std::vector< reco::CaloJet >'),
+    jetHandle = ('ak5PFJets', 'std::vector< reco::PFJet >'),
     genJetHandle = ('ak5GenJets', 'std::vector< reco::GenJet >'),
     genParticleHandle = ('genParticles', 'std::vector< reco::GenParticle >'),
     jetPt = 1.,
-    jetEta = 4.7,
+    jetEta = 5.0,
     )
 
 
@@ -65,7 +72,7 @@ QCD = cfg.Component(
     # files = ['RECO.root'],
     files = getFiles(
       '/QCDFlatPt/5_3_14_automc_noPU/AODSIM_RECOSIM_DISPLAY',
-      'cmgtools', 'reco.*root', useCache=False),
+      'cmgtools', 'aod.*root', useCache=False),
     splitFactor = 12
     )
 QCD.isMC = True
@@ -80,9 +87,11 @@ selectedComponents = [comp]
 
 sequence = cfg.Sequence( [
     # pfAna,
+    # eventSelector,
     jsonAna,
     vertexAna,
     jetAna,
+    # printAna,
     treeProducer,
    ] )
 
@@ -92,9 +101,9 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
-    comp.files = comp.files[:1]
+    comp.files = comp.files[:10]
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 10
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component

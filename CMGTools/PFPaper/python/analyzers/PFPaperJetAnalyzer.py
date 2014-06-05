@@ -10,7 +10,6 @@ from CMGTools.PFPaper.analyzers.Jets import   PFJet, GenJet, CaloJet, BaseJet
 
 
 
-
 class PFPaperJetAnalyzer( Analyzer ):
     """Analyze jets ;-)
 
@@ -69,7 +68,7 @@ class PFPaperJetAnalyzer( Analyzer ):
         leptons = []
         if hasattr(event, 'selectedLeptons'):
             leptons = event.selectedLeptons
-            
+
         for cmgJet in cmgJets:
             jet = self.JetClass( cmgJet )
             allJets.append( jet )
@@ -91,10 +90,14 @@ class PFPaperJetAnalyzer( Analyzer ):
             match_genJets = matchObjectCollection( event.jets, genJets, dr2max )
             match_genParticle3 = matchObjectCollection( event.jets, genStatus3, dr2max)
             for jet in event.jets:
-                jet.genJet = match_genJets[jet]
-                jet.genParticle3 = match_genParticle3[jet]
-            
-        
+                gj = match_genJets[jet]
+                jet.genJet = gj
+                if gj:
+                    jet.genJet_dr2 = deltaR2(jet.eta(), jet.phi(), gj.eta(), gj.phi() )
+                gp = match_genParticle3[jet]
+                jet.genParticle3 = gp
+                if gp:
+                    jet.genParticle3_dr2 = deltaR2(jet.eta(), jet.phi(), gp.eta(), gp.phi() )
         event.jets30 = [jet for jet in event.jets if jet.pt()>30]
         event.cleanJets30 = [jet for jet in event.cleanJets if jet.pt()>30]
         
@@ -106,7 +109,7 @@ class PFPaperJetAnalyzer( Analyzer ):
 
         if len(event.cleanJets)<2:
             return True
-
+        # import pdb; pdb.set_trace()
         return True
 
 
