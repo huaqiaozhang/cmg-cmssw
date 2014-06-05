@@ -7,21 +7,23 @@ class EventSelector( Analyzer ):
     Example:
 
     eventSelector = cfg.Analyzer(
-    'EventSelector',
-    toSelect = [
-    1239742,
-    38001,
-    159832
-    ]
+      'EventSelector',
+      toSelect = [
+       1239742,
+       38001,
+       159832
+      ],
+      iEv = False
     )
 
     The process function of this analyzer returns False if the event number
     is not in the toSelect list.
-    In this list, put actual CMS event numbers obtained by doing:
-       iEvent.eventAuxiliary().id().event()
 
-    not event processing number
-    in this python framework.
+    If the optional parameter iEv is False, put in this list the actual
+    CMS event numbers obtained by doing:
+       iEvent.eventAuxiliary().id().event()
+    If iEv is True, put in the list the number of events processed in this
+    framework (the first processed event being event number 0)
 
     This analyzer is typically inserted at the beginning of the analyzer
     sequence to skip events you don't want.
@@ -38,6 +40,8 @@ class EventSelector( Analyzer ):
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
         eId = iEvent.eventAuxiliary().id().event()
+        if self.cfg_ana.iEv:
+            eId = event.iEv
         if eId in self.cfg_ana.toSelect:
             # raise ValueError('found')
             print 'Selecting', run, lumi, eId
